@@ -1,14 +1,24 @@
 from threading import RLock
 import asyncio
 import time
+from dataclasses import dataclass, field
+from typing import List
 
 
 class Delayer:
     def __init__(self, lag_seconds: float):
-        self.__lag = lag_seconds
+        self.__lag = 0
         self.__last = 0.0
         self.__lock = RLock()
         self.__alock = asyncio.Lock()
+        self.set_lag(lag_seconds)
+
+    @property
+    def lag(self) -> float:
+        return self.__lag
+
+    def set_lag(self, lag: int):
+        self.__lag = max(0, lag)
 
     def __enter__(self):
         self.__lock.acquire()
